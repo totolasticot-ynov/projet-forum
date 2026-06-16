@@ -17,8 +17,11 @@ type DB struct {
 }
 
 type User struct {
-	ID       int
-	Username string
+	ID          int
+	Username    string
+	DisplayName string
+	AvatarURL   string
+	Gender      string
 }
 
 type Post struct {
@@ -72,6 +75,47 @@ func (d *DB) initSchema() error {
 			return err
 		}
 	}
+	if err := d.ensureUserColumns(); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (d *DB) ensureUserColumns() error {
+	rows, err := d.db.Query(`PRAGMA table_info(users)`)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	existing := map[string]bool{}
+	for rows.Next() {
+		var cid int
+		var name, ctype string
+		var notnull int
+		var dflt sql.NullString
+		var pk int
+		if err := rows.Scan(&cid, &name, &ctype, &notnull, &dflt, &pk); err != nil {
+			return err
+		}
+		existing[name] = true
+	}
+
+	if !existing["display_name"] {
+		if _, err := d.db.Exec(`ALTER TABLE users ADD COLUMN display_name TEXT`); err != nil {
+			return err
+		}
+	}
+	if !existing["avatar_url"] {
+		if _, err := d.db.Exec(`ALTER TABLE users ADD COLUMN avatar_url TEXT`); err != nil {
+			return err
+		}
+	}
+	if !existing["gender"] {
+		if _, err := d.db.Exec(`ALTER TABLE users ADD COLUMN gender TEXT`); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
@@ -87,7 +131,7 @@ func (d *DB) Register(username, password string) error {
 	if err != nil {
 		return err
 	}
-	_, err = d.db.Exec(`INSERT INTO users(username,password_hash) VALUES(?,?)`, username, string(hash))
+	_, err = d.db.Exec(`INSERT INTO users(username,password_hash,display_name,avatar_url,gender) VALUES(?,?,?,?,?)`, username, string(hash), username, "", "")
 	if err != nil {
 		if strings.Contains(err.Error(), "UNIQUE") {
 			return errors.New("ce nom d'utilisateur est déjà pris")
@@ -124,9 +168,9 @@ func (d *DB) CreateSession(userID int) (string, error) {
 }
 
 func (d *DB) UserBySession(token string) (*User, error) {
-	row := d.db.QueryRow(`SELECT u.id, u.username FROM sessions s JOIN users u ON u.id = s.user_id WHERE s.token = ? AND s.expires_at > ?`, token, time.Now().Unix())
+	row := d.db.QueryRow(`SELECT u.id, u.username, u.display_name, u.avatar_url, u.gender FROM sessions s JOIN users u ON u.id = s.user_id WHERE s.token = ? AND s.expires_at > ?`, token, time.Now().Unix())
 	var user User
-	if err := row.Scan(&user.ID, &user.Username); err != nil {
+	if err := row.Scan(&user.ID, &user.Username, &user.DisplayName, &user.AvatarURL, &user.Gender); err != nil {
 		return nil, err
 	}
 	return &user, nil
@@ -134,6 +178,26 @@ func (d *DB) UserBySession(token string) (*User, error) {
 
 func (d *DB) DeleteSession(token string) {
 	_, _ = d.db.Exec(`DELETE FROM sessions WHERE token = ?`, token)
+}
+
+func (d *DB) UpdateUser(userID int, username, displayName, avatarURL, gender string) error {
+	if strings.TrimSpace(username) == "" {
+		return errors.New("nom d'utilisateur requis")
+	}
+	if strings.TrimSpace(displayName) == "" {
+		displayName = username
+	}
+	res, err := d.db.Exec(`UPDATE users SET username = ?, display_name = ?, avatar_url = ?, gender = ? WHERE id = ?`, username, displayName, avatarURL, gender, userID)
+	if err != nil {
+		if strings.Contains(err.Error(), "UNIQUE") {
+			return errors.New("ce nom d'utilisateur est déjà pris")
+		}
+		return err
+	}
+	if count, err := res.RowsAffected(); err == nil && count == 0 {
+		return errors.New("utilisateur introuvable")
+	}
+	return nil
 }
 
 func (d *DB) CreatePost(userID int, title, content, category string) (int, error) {
@@ -149,7 +213,7 @@ func (d *DB) CreatePost(userID int, title, content, category string) (int, error
 func (d *DB) ListPosts(category string) ([]*Post, error) {
 	var rows *sql.Rows
 	var err error
-	base := `SELECT p.id, p.title, p.content, p.category, p.author_id, u.username, p.created_at, COALESCE((SELECT SUM(value) FROM post_votes v WHERE v.post_id = p.id),0) FROM posts p JOIN users u ON u.id = p.author_id`
+	base := `SELECT p.id, p.title, p.content, p.category, p.author_id, u.display_name, p.created_at, COALESCE((SELECT SUM(value) FROM post_votes v WHERE v.post_id = p.id),0) FROM posts p JOIN users u ON u.id = p.author_id`
 	if category == "" {
 		rows, err = d.db.Query(base + ` ORDER BY p.created_at DESC`)
 	} else {
@@ -173,7 +237,7 @@ func (d *DB) ListPosts(category string) ([]*Post, error) {
 }
 
 func (d *DB) GetPost(id int) (*Post, error) {
-	row := d.db.QueryRow(`SELECT p.id, p.title, p.content, p.category, p.author_id, u.username, p.created_at, COALESCE((SELECT SUM(value) FROM post_votes v WHERE v.post_id = p.id),0) FROM posts p JOIN users u ON u.id = p.author_id WHERE p.id = ?`, id)
+	row := d.db.QueryRow(`SELECT p.id, p.title, p.content, p.category, p.author_id, u.display_name, p.created_at, COALESCE((SELECT SUM(value) FROM post_votes v WHERE v.post_id = p.id),0) FROM posts p JOIN users u ON u.id = p.author_id WHERE p.id = ?`, id)
 	p := &Post{}
 	var created int64
 	if err := row.Scan(&p.ID, &p.Title, &p.Content, &p.Category, &p.AuthorID, &p.Author, &created, &p.Score); err != nil {
@@ -190,7 +254,7 @@ func (d *DB) CreateComment(postID, userID int, content string) error {
 }
 
 func (d *DB) ListComments(postID int) ([]*Comment, error) {
-	rows, err := d.db.Query(`SELECT c.id, c.post_id, c.content, u.username, c.author_id, c.created_at, COALESCE((SELECT SUM(value) FROM comment_votes v WHERE v.comment_id = c.id),0) FROM comments c JOIN users u ON u.id = c.author_id WHERE c.post_id = ? ORDER BY c.created_at`, postID)
+	rows, err := d.db.Query(`SELECT c.id, c.post_id, c.content, u.display_name, c.author_id, c.created_at, COALESCE((SELECT SUM(value) FROM comment_votes v WHERE v.comment_id = c.id),0) FROM comments c JOIN users u ON u.id = c.author_id WHERE c.post_id = ? ORDER BY c.created_at`, postID)
 	if err != nil {
 		return nil, err
 	}
