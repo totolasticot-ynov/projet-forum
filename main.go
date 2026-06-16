@@ -1,12 +1,13 @@
 ﻿package main
 
 import (
-    "log"
-    "net/http"
+	"log"
+	"net/http"
 
-    "forum/internal/web"
+	"forum/internal/web"
 )
 
 func main() {
-    log.Fatal(http.ListenAndServe(":8080", web.New()))
+	log.Println("Serveur démarré sur http://localhost:8080")
+	log.Fatal(http.ListenAndServe(":8080", web.New()))
 }

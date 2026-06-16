@@ -1,10 +1,10 @@
-﻿{{define "newpost"}}
+{{define "editcomment"}}
 <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nouveau sujet</title>
+  <title>{{ .Title }}</title>
   <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
@@ -17,21 +17,15 @@
           <a href="/logout">Déconnexion</a>
         {{ else }}
           <a href="/login">Connexion</a>
+          <a href="/register">Inscription</a>
         {{ end }}
       </nav>
     </header>
     <main>
-      <h1>Nouveau sujet</h1>
+      <h1>Modifier le commentaire</h1>
       <form method="post">
-        <input name="title" placeholder="Titre" required>
-        <select name="category" required>
-          <option value="">Choisissez une catégorie</option>
-          {{ range .Categories }}
-            <option value="{{ . }}">{{ . }}</option>
-          {{ end }}
-        </select>
-        <textarea name="content" rows="6" placeholder="Votre message" required></textarea>
-        <button type="submit">Publier</button>
+        <textarea name="content" rows="6" placeholder="Votre commentaire" required>{{ .Comment.Content }}</textarea>
+        <button type="submit">Enregistrer</button>
       </form>
     </main>
   </div>

@@ -1,36 +1,80 @@
-﻿{{define "content"}}
-  <article class="post-full">
-    <h1>{{ .Post.Title }}</h1>
-    <div class="meta">Auteur : {{ .Post.Author }} • Catégorie : {{ .Post.Category }} • Score : {{ .Post.Score }}</div>
-    <p>{{ .Post.Content }}</p>
-    <form action="/post/{{ .Post.ID }}/vote" method="post" class="vote-form">
-      <button name="action" value="like">J’aime</button>
-      <button name="action" value="dislike">Je n’aime pas</button>
-    </form>
-  </article>
-  <section class="comments">
-    <h2>Commentaires</h2>
-    {{ if .Comments }}
-      {{ range .Comments }}
-        <article class="comment">
-          <strong>{{ .Author }}</strong>
-          <p>{{ .Content }}</p>
-          <div class="meta">Score : {{ .Score }}</div>
-        </article>
+﻿{{define "post"}}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ .Title }}</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div class="brand"><a href="/">Forum Go</a></div>
+      <nav>
+        {{ if .User }}
+          <span>Bonjour {{ .User.Username }}</span>
+          <a href="/post/new">Nouveau sujet</a>
+          <a href="/logout">Déconnexion</a>
+        {{ else }}
+          <a href="/login">Connexion</a>
+          <a href="/register">Inscription</a>
+        {{ end }}
+      </nav>
+    </header>
+    <main>
+      <article class="post-full">
+        <h1>{{ .Post.Title }}</h1>
+        <div class="meta">Auteur : {{ .Post.Author }} • Catégorie : {{ .Post.Category }} • Score : {{ .Post.Score }}</div>
+        <p>{{ .Post.Content }}</p>
+        <div class="post-actions">
+          <form action="/post/{{ .Post.ID }}/vote" method="post" class="vote-form">
+            <button name="action" value="like">J’aime</button>
+            <button name="action" value="dislike">Je n’aime pas</button>
+          </form>
+          {{ if and .User (eq .User.ID .Post.AuthorID) }}
+            <a class="small-button" href="/post/{{ .Post.ID }}/edit">Modifier</a>
+            <form action="/post/{{ .Post.ID }}/delete" method="post" class="inline-form">
+              <button type="submit" class="small-button danger">Supprimer</button>
+            </form>
+          {{ end }}
+        </div>
+      </article>
+      <section class="comments">
+        <h2>Commentaires</h2>
+        {{ if .Comments }}
+          {{ range .Comments }}
+            <article class="comment">
+              <strong>{{ .Author }}</strong>
+              <p>{{ .Content }}</p>
+              <div class="meta">Score : {{ .Score }}</div>
+              {{ if and $.User (eq $.User.ID .AuthorID) }}
+                <div class="comment-actions">
+                  <a class="small-button" href="/comment/{{ .ID }}/edit">Modifier</a>
+                  <form action="/comment/{{ .ID }}/delete" method="post" class="inline-form">
+                    <button type="submit" class="small-button danger">Supprimer</button>
+                  </form>
+                </div>
+              {{ end }}
+            </article>
+          {{ end }}
+        {{ else }}
+          <p>Aucun commentaire pour l’instant.</p>
+        {{ end }}
+      </section>
+      {{ if .User }}
+        <section class="comment-form">
+          <h2>Ajouter un commentaire</h2>
+          <form action="/post/{{ .Post.ID }}/comment" method="post">
+            <textarea name="content" rows="4" placeholder="Écrire un commentaire..." required></textarea>
+            <button type="submit">Publier</button>
+          </form>
+        </section>
+      {{ else }}
+        <p><a href="/login">Connectez-vous</a> pour commenter.</p>
       {{ end }}
-    {{ else }}
-      <p>Aucun commentaire pour l’instant.</p>
-    {{ end }}
-  </section>
-  {{ if .User }}
-    <section class="comment-form">
-      <h2>Ajouter un commentaire</h2>
-      <form action="/post/{{ .Post.ID }}/comment" method="post">
-        <textarea name="content" rows="4" placeholder="Écrire un commentaire..." required></textarea>
-        <button type="submit">Publier</button>
-      </form>
-    </section>
-  {{ else }}
-    <p><a href="/login">Connectez-vous</a> pour commenter.</p>
-  {{ end }}
+    </main>
+  </div>
+</body>
+</html>
 {{ end }}
