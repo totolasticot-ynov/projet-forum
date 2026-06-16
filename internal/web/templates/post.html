@@ -1,0 +1,36 @@
+﻿{{define "content"}}
+  <article class="post-full">
+    <h1>{{ .Post.Title }}</h1>
+    <div class="meta">Auteur : {{ .Post.Author }} • Catégorie : {{ .Post.Category }} • Score : {{ .Post.Score }}</div>
+    <p>{{ .Post.Content }}</p>
+    <form action="/post/{{ .Post.ID }}/vote" method="post" class="vote-form">
+      <button name="action" value="like">J’aime</button>
+      <button name="action" value="dislike">Je n’aime pas</button>
+    </form>
+  </article>
+  <section class="comments">
+    <h2>Commentaires</h2>
+    {{ if .Comments }}
+      {{ range .Comments }}
+        <article class="comment">
+          <strong>{{ .Author }}</strong>
+          <p>{{ .Content }}</p>
+          <div class="meta">Score : {{ .Score }}</div>
+        </article>
+      {{ end }}
+    {{ else }}
+      <p>Aucun commentaire pour l’instant.</p>
+    {{ end }}
+  </section>
+  {{ if .User }}
+    <section class="comment-form">
+      <h2>Ajouter un commentaire</h2>
+      <form action="/post/{{ .Post.ID }}/comment" method="post">
+        <textarea name="content" rows="4" placeholder="Écrire un commentaire..." required></textarea>
+        <button type="submit">Publier</button>
+      </form>
+    </section>
+  {{ else }}
+    <p><a href="/login">Connectez-vous</a> pour commenter.</p>
+  {{ end }}
+{{ end }}

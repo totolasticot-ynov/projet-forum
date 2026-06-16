@@ -1,0 +1,20 @@
+﻿body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f2f4f8;color:#102a43}
+.page{max-width:960px;margin:0 auto;padding:20px}
+header{display:flex;justify-content:space-between;align-items:center;background:#2563eb;color:#fff;padding:18px 24px;border-radius:12px}
+header .brand a{color:#fff;text-decoration:none;font-size:1.4rem;font-weight:700}
+header nav a, header nav span{color:#fff;margin-left:16px;text-decoration:none}
+main{margin-top:24px}
+form{background:#fff;padding:20px;border-radius:14px;box-shadow:0 12px 30px rgba(15,23,42,.08);margin-bottom:24px}
+form input, form select, form textarea{width:100%;padding:12px;margin-top:10px;margin-bottom:16px;border:1px solid #d9e2ec;border-radius:10px;font-size:1rem}
+form button{background:#2563eb;color:#fff;border:none;padding:12px 18px;border-radius:10px;cursor:pointer;font-size:1rem}
+form button:hover{background:#1d4ed8}
+.post-preview, .post-full, .comment{background:#fff;padding:18px;border-radius:14px;box-shadow:0 8px 24px rgba(15,23,42,.05);margin-bottom:20px}
+.post-title{font-size:1.3rem;font-weight:700;color:#102a43;text-decoration:none}
+.meta{font-size:.95rem;color:#64748b;margin-top:10px}
+.flash{background:#fee2e2;color:#991b1b;padding:12px;border-radius:10px;margin-bottom:16px}
+.vote-form{display:flex;gap:10px;margin-top:14px}
+.vote-form button{width:100px}
+.filter{margin-bottom:20px}
+.filter label{font-weight:700;color:#334155}
+.filter select{max-width:240px}
+@media(max-width:720px){header{flex-direction:column;align-items:flex-start}header nav{margin-top:12px} .vote-form{flex-direction:column}}

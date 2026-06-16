@@ -1,0 +1,14 @@
+﻿{{define "content"}}
+  <h1>Nouveau sujet</h1>
+  <form method="post">
+    <input name="title" placeholder="Titre" required>
+    <select name="category" required>
+      <option value="">Choisissez une catégorie</option>
+      {{ range .Categories }}
+        <option value="{{ . }}">{{ . }}</option>
+      {{ end }}
+    </select>
+    <textarea name="content" rows="6" placeholder="Votre message" required></textarea>
+    <button type="submit">Publier</button>
+  </form>
+{{ end }}
