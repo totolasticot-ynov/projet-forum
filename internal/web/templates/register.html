@@ -1,9 +1,30 @@
-﻿{{define "content"}}
-  <h1>Inscription</h1>
-  {{ if .Flash }}<div class="flash">{{ .Flash }}</div>{{ end }}
-  <form method="post">
-    <input name="username" placeholder="Nom d'utilisateur" required>
-    <input type="password" name="password" placeholder="Mot de passe" required>
-    <button type="submit">S'inscrire</button>
-  </form>
+﻿{{define "register"}}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inscription</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div class="brand"><a href="/">Forum Go</a></div>
+      <nav>
+        <a href="/login">Connexion</a>
+      </nav>
+    </header>
+    <main>
+      <h1>Inscription</h1>
+      {{ if .Flash }}<div class="flash">{{ .Flash }}</div>{{ end }}
+      <form method="post">
+        <input name="username" placeholder="Nom d'utilisateur" required>
+        <input type="password" name="password" placeholder="Mot de passe" required>
+        <button type="submit">S'inscrire</button>
+      </form>
+    </main>
+  </div>
+</body>
+</html>
 {{ end }}
