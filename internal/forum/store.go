@@ -200,6 +200,16 @@ func (d *DB) UpdateUser(userID int, username, displayName, avatarURL, gender str
 	return nil
 }
 
+func (d *DB) UserStats(userID int) (posts, comments int, err error) {
+	if err = d.db.QueryRow(`SELECT COUNT(*) FROM posts WHERE author_id = ?`, userID).Scan(&posts); err != nil {
+		return 0, 0, err
+	}
+	if err = d.db.QueryRow(`SELECT COUNT(*) FROM comments WHERE author_id = ?`, userID).Scan(&comments); err != nil {
+		return 0, 0, err
+	}
+	return posts, comments, nil
+}
+
 func (d *DB) CreatePost(userID int, title, content, category string) (int, error) {
 	now := time.Now().Unix()
 	res, err := d.db.Exec(`INSERT INTO posts(author_id,title,content,category,created_at) VALUES(?,?,?,?,?)`, userID, title, content, category, now)

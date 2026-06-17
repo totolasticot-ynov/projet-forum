@@ -1,14 +1,14 @@
 ﻿body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f2f4f8;color:#102a43}
-.page{max-width:960px;margin:0 auto;padding:20px}
+.page{max-width:1100px;margin:0 auto;padding:20px}
 header{display:flex;justify-content:space-between;align-items:center;background:#2563eb;color:#fff;padding:18px 24px;border-radius:12px}
 header .brand a{color:#fff;text-decoration:none;font-size:1.4rem;font-weight:700}
 header nav a, header nav span{color:#fff;margin-left:16px;text-decoration:none}
 main{margin-top:24px}
 form{background:#fff;padding:20px;border-radius:14px;box-shadow:0 12px 30px rgba(15,23,42,.08);margin-bottom:24px}
-form input, form select, form textarea{width:100%;padding:12px;margin-top:10px;margin-bottom:16px;border:1px solid #d9e2ec;border-radius:10px;font-size:1rem}
+form input, form select, form textarea{width:100%;padding:12px;margin-top:10px;margin-bottom:16px;border:1px solid #d9e2ec;border-radius:10px;font-size:1rem;box-sizing:border-box}
 form button{background:#2563eb;color:#fff;border:none;padding:12px 18px;border-radius:10px;cursor:pointer;font-size:1rem}
 form button:hover{background:#1d4ed8}
-.post-preview, .post-full, .comment{background:#fff;padding:18px;border-radius:14px;box-shadow:0 8px 24px rgba(15,23,42,.05);margin-bottom:20px}
+.post-preview, .post-full, .comment, .profile-card, .profile-panel{background:#fff;padding:18px;border-radius:14px;box-shadow:0 8px 24px rgba(15,23,42,.05);margin-bottom:20px}
 .post-title{font-size:1.3rem;font-weight:700;color:#102a43;text-decoration:none}
 .meta{font-size:.95rem;color:#64748b;margin-top:10px}
 .flash{background:#fee2e2;color:#991b1b;padding:12px;border-radius:10px;margin-bottom:16px}
@@ -23,4 +23,18 @@ form button:hover{background:#1d4ed8}
 .filter{margin-bottom:20px}
 .filter label{font-weight:700;color:#334155}
 .filter select{max-width:240px}
-@media(max-width:720px){header{flex-direction:column;align-items:flex-start}header nav{margin-top:12px} .vote-form{flex-direction:column}}
+.profile-page{display:grid;gap:18px}
+.profile-card{display:flex;align-items:center;gap:18px}
+.profile-avatar-large{width:96px;height:96px;border-radius:50%;background:#dbeafe;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
+.profile-avatar-large img{width:100%;height:100%;object-fit:cover}
+.profile-avatar-large span{font-size:2rem;font-weight:700;color:#1d4ed8}
+.profile-eyebrow{margin:0 0 6px;color:#2563eb;font-size:.85rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em}
+.profile-card h1{margin:0;font-size:2rem}
+.profile-username{margin:6px 0;color:#64748b}
+.profile-meta{margin:0;color:#334155}
+.profile-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.stat-card{background:#fff;padding:16px;border-radius:14px;box-shadow:0 8px 24px rgba(15,23,42,.05);text-align:center}
+.stat-card strong{display:block;font-size:1.8rem;color:#2563eb}
+.stat-card span{color:#64748b}
+.profile-panel h2{margin-top:0}
+@media(max-width:720px){header{flex-direction:column;align-items:flex-start}header nav{margin-top:12px} .vote-form{flex-direction:column} .profile-card{flex-direction:column;align-items:flex-start} .profile-stats{grid-template-columns:1fr}}

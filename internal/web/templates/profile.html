@@ -23,25 +23,56 @@
       </nav>
     </header>
     <main>
-      <h1>Mon profil</h1>
-      {{ if .Flash }}<div class="flash">{{ .Flash }}</div>{{ end }}
-      <form method="post">
-        <input name="username" placeholder="Nom d'utilisateur" value="{{ .User.Username }}" required>
-        <input name="display_name" placeholder="Pseudo" value="{{ .User.DisplayName }}">
-        <input name="avatar_url" placeholder="URL de l'avatar" value="{{ .User.AvatarURL }}">
-        <select name="gender">
-          <option value="">Genre</option>
-          <option value="Homme" {{ if eq .User.Gender "Homme" }}selected{{ end }}>Homme</option>
-          <option value="Femme" {{ if eq .User.Gender "Femme" }}selected{{ end }}>Femme</option>
-          <option value="Autre" {{ if eq .User.Gender "Autre" }}selected{{ end }}>Autre</option>
-        </select>
-        <button type="submit">Mettre à jour</button>
-      </form>
-      {{ if .User.AvatarURL }}
-        <div class="profile-avatar">
-          <img src="{{ .User.AvatarURL }}" alt="Avatar de {{ .User.DisplayName }}">
-        </div>
-      {{ end }}
+      <section class="profile-page">
+        <section class="profile-card">
+          <div class="profile-avatar-large">
+            {{ if .User.AvatarURL }}
+              <img src="{{ .User.AvatarURL }}" alt="Avatar de {{ .User.DisplayName }}">
+            {{ else }}
+              <span>{{ if .User.DisplayName }}{{ .User.DisplayName }}{{ else }}U{{ end }}</span>
+            {{ end }}
+          </div>
+          <div>
+            <p class="profile-eyebrow">Profil</p>
+            <h1>{{ .User.DisplayName }}</h1>
+            <p class="profile-username">@{{ .User.Username }}</p>
+            <p class="profile-meta">{{ if .User.Gender }}{{ .User.Gender }}{{ else }}Profil en cours de personnalisation{{ end }}</p>
+          </div>
+        </section>
+
+        <section class="profile-stats">
+          <div class="stat-card">
+            <strong>{{ .PostsCount }}</strong>
+            <span>Sujets</span>
+          </div>
+          <div class="stat-card">
+            <strong>{{ .CommentsCount }}</strong>
+            <span>Commentaires</span>
+          </div>
+          <div class="stat-card">
+            <strong>{{ if .User.Gender }}Oui{{ else }}Non{{ end }}</strong>
+            <span>Genre</span>
+          </div>
+        </section>
+
+        {{ if .Flash }}<div class="flash">{{ .Flash }}</div>{{ end }}
+
+        <section class="profile-panel">
+          <h2>Modifier votre profil</h2>
+          <form method="post">
+            <input name="username" placeholder="Nom d'utilisateur" value="{{ .User.Username }}" required>
+            <input name="display_name" placeholder="Pseudo" value="{{ .User.DisplayName }}">
+            <input name="avatar_url" placeholder="URL de l'avatar" value="{{ .User.AvatarURL }}">
+            <select name="gender">
+              <option value="">Genre</option>
+              <option value="Homme" {{ if eq .User.Gender "Homme" }}selected{{ end }}>Homme</option>
+              <option value="Femme" {{ if eq .User.Gender "Femme" }}selected{{ end }}>Femme</option>
+              <option value="Autre" {{ if eq .User.Gender "Autre" }}selected{{ end }}>Autre</option>
+            </select>
+            <button type="submit">Mettre à jour</button>
+          </form>
+        </section>
+      </section>
     </main>
   </div>
 </body>

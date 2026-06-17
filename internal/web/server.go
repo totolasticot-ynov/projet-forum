@@ -94,7 +94,16 @@ func New() http.Handler {
 			http.Redirect(w, r, "/login", http.StatusSeeOther)
 			return
 		}
-		data := map[string]interface{}{"Title": "Mon profil", "User": user}
+		postsCount, commentsCount, statsErr := db.UserStats(user.ID)
+		data := map[string]interface{}{
+			"Title":         "Mon profil",
+			"User":          user,
+			"PostsCount":    postsCount,
+			"CommentsCount": commentsCount,
+		}
+		if statsErr != nil {
+			data["Flash"] = "Impossible de charger les statistiques"
+		}
 		if r.Method == http.MethodPost {
 			err := r.ParseForm()
 			if err == nil {
@@ -111,6 +120,11 @@ func New() http.Handler {
 						}
 					}
 					data["User"] = user
+					postsCount, commentsCount, statsErr = db.UserStats(user.ID)
+					if statsErr == nil {
+						data["PostsCount"] = postsCount
+						data["CommentsCount"] = commentsCount
+					}
 					http.Redirect(w, r, "/profile", http.StatusSeeOther)
 					return
 				}
