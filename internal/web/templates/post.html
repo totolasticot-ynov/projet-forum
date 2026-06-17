@@ -25,9 +25,13 @@
     </header>
     <main>
       <article class="post-full">
+        <div class="post-header-row">
+          <span class="category-pill">{{ .Post.Category }}</span>
+          <a class="small-button" href="/">← Retour</a>
+        </div>
         <h1>{{ .Post.Title }}</h1>
-        <div class="meta">Auteur : {{ .Post.Author }} • Catégorie : {{ .Post.Category }} • Score : {{ .Post.Score }}</div>
-        <p>{{ .Post.Content }}</p>
+        <div class="meta">Par {{ .Post.Author }} • Score : {{ .Post.Score }}</div>
+        <p class="post-content">{{ .Post.Content }}</p>
         <div class="post-actions">
           <form action="/post/{{ .Post.ID }}/vote" method="post" class="vote-form">
             <button name="action" value="like">J’aime</button>

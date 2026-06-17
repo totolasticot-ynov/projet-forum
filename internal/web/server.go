@@ -31,12 +31,14 @@ func New() http.Handler {
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		user := currentUser(r, db)
 		category := strings.TrimSpace(r.URL.Query().Get("category"))
-		posts, _ := db.ListPosts(category)
+		search := strings.TrimSpace(r.URL.Query().Get("q"))
+		posts, _ := db.ListPosts(category, search)
 		render(w, "home", map[string]interface{}{
 			"Title":      "Forum Go",
 			"User":       user,
 			"Posts":      posts,
 			"Category":   category,
+			"Search":     search,
 			"Categories": categories,
 		})
 	})

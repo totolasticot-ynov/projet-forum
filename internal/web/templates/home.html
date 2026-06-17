@@ -25,27 +25,31 @@
     </header>
     <main>
       <section class="filter">
-        <form>
-          <label>Filtrer par catégorie</label>
+        <form class="search-bar">
+          <input type="search" name="q" value="{{ .Search }}" placeholder="Rechercher un sujet...">
           <select name="category" onchange="this.form.submit()">
-            <option value="">Toutes</option>
+            <option value="">Toutes les catégories</option>
             {{ range .Categories }}
               <option value="{{ . }}" {{ if eq . $.Category }}selected{{ end }}>{{ . }}</option>
             {{ end }}
           </select>
+          <button type="submit">Rechercher</button>
         </form>
       </section>
       <section class="posts">
         {{ if .Posts }}
           {{ range .Posts }}
             <article class="post-preview">
-              <a class="post-title" href="/post/{{ .ID }}">{{ .Title }}</a>
-              <div class="meta">Auteur : {{ .Author }} • Catégorie : {{ .Category }} • Score : {{ .Score }}</div>
+              <div class="post-preview-top">
+                <a class="post-title" href="/post/{{ .ID }}">{{ .Title }}</a>
+                <span class="category-pill">{{ .Category }}</span>
+              </div>
+              <div class="meta">Auteur : {{ .Author }} • Score : {{ .Score }}</div>
               <p>{{ .Content }}</p>
             </article>
           {{ end }}
         {{ else }}
-          <p>Aucun sujet pour l’instant.</p>
+          <p class="empty-state">Aucun sujet ne correspond à votre recherche.</p>
         {{ end }}
       </section>
     </main>

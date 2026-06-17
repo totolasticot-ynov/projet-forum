@@ -220,14 +220,29 @@ func (d *DB) CreatePost(userID int, title, content, category string) (int, error
 	return int(id), err
 }
 
-func (d *DB) ListPosts(category string) ([]*Post, error) {
+func (d *DB) ListPosts(category, search string) ([]*Post, error) {
 	var rows *sql.Rows
 	var err error
 	base := `SELECT p.id, p.title, p.content, p.category, p.author_id, COALESCE(u.display_name, u.username), p.created_at, COALESCE((SELECT SUM(value) FROM post_votes v WHERE v.post_id = p.id),0) FROM posts p JOIN users u ON u.id = p.author_id`
-	if category == "" {
-		rows, err = d.db.Query(base + ` ORDER BY p.created_at DESC`)
+	whereClauses := []string{}
+	args := []any{}
+	if category != "" {
+		whereClauses = append(whereClauses, `p.category = ?`)
+		args = append(args, category)
+	}
+	if search != "" {
+		whereClauses = append(whereClauses, `(LOWER(p.title) LIKE ? OR LOWER(p.content) LIKE ?)`)
+		term := "%" + strings.ToLower(search) + "%"
+		args = append(args, term, term)
+	}
+	if len(whereClauses) > 0 {
+		base += ` WHERE ` + strings.Join(whereClauses, ` AND `)
+	}
+	base += ` ORDER BY p.created_at DESC`
+	if len(args) == 0 {
+		rows, err = d.db.Query(base)
 	} else {
-		rows, err = d.db.Query(base+` WHERE p.category = ? ORDER BY p.created_at DESC`, category)
+		rows, err = d.db.Query(base, args...)
 	}
 	if err != nil {
 		return nil, err

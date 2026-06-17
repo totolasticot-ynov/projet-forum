@@ -23,6 +23,14 @@ form button:hover{background:#1d4ed8}
 .filter{margin-bottom:20px}
 .filter label{font-weight:700;color:#334155}
 .filter select{max-width:240px}
+.search-bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.search-bar input{flex:1;min-width:220px;margin:0}
+.search-bar button{margin:0}
+.post-preview-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.category-pill{display:inline-block;padding:6px 10px;border-radius:999px;background:#dbeafe;color:#1d4ed8;font-size:.85rem;font-weight:700}
+.post-content{white-space:pre-wrap;line-height:1.6}
+.post-header-row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.empty-state{color:#64748b;font-style:italic}
 .profile-page{display:grid;gap:18px}
 .profile-card{display:flex;align-items:center;gap:18px}
 .profile-avatar-large{width:96px;height:96px;border-radius:50%;background:#dbeafe;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
