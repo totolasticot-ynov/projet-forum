@@ -88,6 +88,38 @@ func New() http.Handler {
 		render(w, "register", data)
 	})
 
+	mux.HandleFunc("/profile", func(w http.ResponseWriter, r *http.Request) {
+		user := currentUser(r, db)
+		if user == nil {
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
+			return
+		}
+		data := map[string]interface{}{"Title": "Mon profil", "User": user}
+		if r.Method == http.MethodPost {
+			err := r.ParseForm()
+			if err == nil {
+				username := strings.TrimSpace(r.FormValue("username"))
+				displayName := strings.TrimSpace(r.FormValue("display_name"))
+				avatarURL := strings.TrimSpace(r.FormValue("avatar_url"))
+				gender := strings.TrimSpace(r.FormValue("gender"))
+				err = db.UpdateUser(user.ID, username, displayName, avatarURL, gender)
+				if err == nil {
+					cookie, cookieErr := r.Cookie("forum_session")
+					if cookieErr == nil {
+						if updatedUser, updatedErr := db.UserBySession(cookie.Value); updatedErr == nil {
+							user = updatedUser
+						}
+					}
+					data["User"] = user
+					http.Redirect(w, r, "/profile", http.StatusSeeOther)
+					return
+				}
+				data["Flash"] = err.Error()
+			}
+		}
+		render(w, "profile", data)
+	})
+
 	mux.HandleFunc("/logout", func(w http.ResponseWriter, r *http.Request) {
 		cookie, err := r.Cookie("forum_session")
 		if err == nil {

@@ -13,7 +13,8 @@
       <div class="brand"><a href="/">Forum Go</a></div>
       <nav>
         {{ if .User }}
-          <span>Bonjour {{ .User.Username }}</span>
+          <span>Bonjour {{ .User.DisplayName }}</span>
+          <a href="/profile">Profil</a>
           <a href="/post/new">Nouveau sujet</a>
           <a href="/logout">Déconnexion</a>
         {{ else }}

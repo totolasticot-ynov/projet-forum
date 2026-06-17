@@ -1,0 +1,49 @@
+{{define "profile"}}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ .Title }}</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div class="brand"><a href="/">Forum Go</a></div>
+      <nav>
+        {{ if .User }}
+          <span>Bonjour {{ .User.DisplayName }}</span>
+          <a href="/post/new">Nouveau sujet</a>
+          <a href="/logout">Déconnexion</a>
+        {{ else }}
+          <a href="/login">Connexion</a>
+          <a href="/register">Inscription</a>
+        {{ end }}
+      </nav>
+    </header>
+    <main>
+      <h1>Mon profil</h1>
+      {{ if .Flash }}<div class="flash">{{ .Flash }}</div>{{ end }}
+      <form method="post">
+        <input name="username" placeholder="Nom d'utilisateur" value="{{ .User.Username }}" required>
+        <input name="display_name" placeholder="Pseudo" value="{{ .User.DisplayName }}">
+        <input name="avatar_url" placeholder="URL de l'avatar" value="{{ .User.AvatarURL }}">
+        <select name="gender">
+          <option value="">Genre</option>
+          <option value="Homme" {{ if eq .User.Gender "Homme" }}selected{{ end }}>Homme</option>
+          <option value="Femme" {{ if eq .User.Gender "Femme" }}selected{{ end }}>Femme</option>
+          <option value="Autre" {{ if eq .User.Gender "Autre" }}selected{{ end }}>Autre</option>
+        </select>
+        <button type="submit">Mettre à jour</button>
+      </form>
+      {{ if .User.AvatarURL }}
+        <div class="profile-avatar">
+          <img src="{{ .User.AvatarURL }}" alt="Avatar de {{ .User.DisplayName }}">
+        </div>
+      {{ end }}
+    </main>
+  </div>
+</body>
+</html>
+{{ end }}
